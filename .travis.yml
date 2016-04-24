@@ -3,20 +3,17 @@ jdk:
 - oraclejdk8
 before_install:
 - pip install --user codecov
-- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in wolfninja_keystore.pubring.gpg.enc
-  -out wolfninja_keystore.pubring.gpg -d
-- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in wolfninja_keystore.secring.gpg.enc
-  -out wolfninja_keystore.secring.gpg -d
-- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out
-  gradle.properties -d
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 gradle.properties.gpg
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 wolfninja_keystore.pubring.gpg.gpg
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 wolfninja_keystore.secring.gpg.gpg
 script: gradle check javadoc
 after_success:
 - codecov
-- .scripts/publish.sh
+- ".scripts/publish.sh"
 cache:
   directories:
-  - $HOME/.gradle
-  - $HOME/.m2
+  - "$HOME/.gradle"
+  - "$HOME/.m2"
 env:
   global:
-    secure: TD3uLhisvHn6K8x4S9cz8V8UCj/DrUiebhulGqkvUmlRHS1qsbcVOvzEekUs5AizN5lW9xATmWkkzLUYC0MSzAavXRJjLZMgjF45WUa9Y8RwDCLVhlY5wHJkfnWehTsNFu00F+42V6fV4eucXulK2Nkip+EJY4sQvu8De/Aa2D9kmSmoyKu6c2o1PBAykDd2aGSNNEF2iks6X45aeYd7dxNhP75ecuK9UHo7bcU+qdqXmidspS/xmd2o3q31SfHdhLV0ls5C15wilcpn0Ng6brwvy5tQGLihf7BuQivsz6FASTSUWPhIOH0mkXMOz8qHsfbUhAaTRsuHEr3yin6Ip1kuUXC4eLyhVj/mT/yTejSUQ2BCjGjQZtAutuF3lRNMot4OfXmHTGWEwZRcHtxsAsG6Vc01pWM/R5eWxqj9HwBD25LivErKDUYu12rYcTc7ZkxqAVDww5qaWGHxhazGp2Jgou4MLwu3egNZovHaaR554Tz+gkoYyZLwcmXxxpCN+r7J+zDaxTMJnt2F2tKdVNdEVLMo7I2wnu027p7oYXRFZcKse1GjmB+CGel4D75p42MVOpR4UPI2TsgBKijkwp7RnygU6r3VzvjUyaF25iwWk1bA/Hvr9Goi1kMCXdniTbjw3sbPUmPfd3D3QzTeAPCdBlkcQHqlv/3e1VmKqu4=
+    secure: QSx1hprMtAk5qTlTq9Y8XJQbYA9TtpjuM3gOLNOZY4GJ9zbfs95ld3rTP0wTXaWOc3BbvdrpgRB44BicEjlx/SyH+fEsHYqBIQvUHB8SIPapyzAge3hfHfZE4OBMIH+E2p79zyewUPfETh7OmaVREEhmaWMNeywcdJD6/7hR2uTMf4xKW8n8R/VA4KvR1dizYLr7BN4fzSGKhTOOpxLxtr2Df5MXSSzE42LfByL6rZ2skL+GVcK21hAiv4uP6SbUaU8cs2joD196Kx3yv6iFn1CrgnO7xu8OUT9WbIWuEVPagMb51OMmUB/E/WJ2Ef+VzPCFNw+4ycsJlwafEySJnTfwzYVyo0MnTHI1aCTan7+gTWrxeZd/JWfz+ShIWLFVGqwmJO8cP1xqdDsjITirowrv9EOLGOlisEEGqQgTE4fPpuodjYGEY0pYsWXqfZA2anSAMsuImJCpkQcPCXr6Pd975qPDmY23ZmJfw6aWEfqeQ8cuntXzybU8dmUlmhj0rena9FL/MLy7BXBF4yzpAeHaxKwFjekmNgBzSnzyP4klxQK+SAZ0IbUhnX4shsNO0KCLuc6seh3lRdQBH5cBjetCIwcHGj9I9Fh7DlLUzbZQMdm0WBnkgYd/FSspP22Ycwp/ATLMVtItSgkUN4oRfKWMkiwlvgMDCTbmKExq80M=
