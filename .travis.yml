@@ -6,6 +6,7 @@ before_install:
 - echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 gradle.properties.gpg
 - echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 wolfninja_keystore.pubring.gpg.gpg
 - echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 wolfninja_keystore.secring.gpg.gpg
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 src/integration/resources/aws.test.properties.gpg
 script: gradle check javadoc
 after_success:
 - codecov
