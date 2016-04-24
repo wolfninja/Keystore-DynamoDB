@@ -1,0 +1,179 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:3.0.+'
+  }
+}
+
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'biz.aQute.bnd.builder'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version = '0.1.0'
+group 'com.wolfninja.keystore'
+ext.packaging = 'jar'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+def isDevBuild
+def isCiBuild
+def isReleaseBuild
+def isSign
+def sonatypeRepoUrl
+
+dependencies {
+	compile 'com.wolfninja.keystore:keystore-api:0.1.0'
+	testCompile 'com.wolfninja.keystore:keystore-api:0.1.0:tests@jar'
+	
+	compile 'com.google.code.findbugs:jsr305:3.0.1'
+	compile 'biz.aQute.bnd:biz.aQute.bnd.annotation:3.0.0'
+
+	compile 'com.amazonaws:aws-java-sdk-dynamodb:1.10.72'
+	
+	testCompile 'org.testng:testng:6.9.9'
+	testCompile 'org.easymock:easymock:3.4'
+	testCompile 'org.powermock:powermock-module-testng:1.6.4'
+	testCompile 'org.powermock:powermock-api-easymock:1.6.4'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+	integration {
+		java {
+			srcDir 'src/integration/java'
+		}
+		resources {
+			srcDir 'src/integration/resources'
+		}
+		compileClasspath += sourceSets.test.runtimeClasspath
+	}
+}
+
+task getVersion << {
+      println version
+}
+
+task integrationTest(type: Test) {
+	description = "Run integration tests (from src/integration)"
+	testClassesDir = sourceSets.integration.output.classesDir
+	classpath += sourceSets.integration.runtimeClasspath
+	reports.html.enabled = false
+}
+
+task integrationTestReport(type: TestReport) {
+	destinationDir = file("$buildDir/reports/integrationTest")
+	reportOn integrationTest.binResultsDir
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+integrationTest.useTestNG()
+test.useTestNG()
+
+check.dependsOn integrationTest
+check.dependsOn integrationTestReport
+integrationTestReport.dependsOn integrationTest
+
+check.dependsOn jacocoTestReport
+
+artifacts {
+	archives jar
+
+	archives javadocJar
+	archives sourcesJar
+}
+
+if(hasProperty("release")) {
+	isReleaseBuild = true
+        isSign = true
+        sonatypeRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+} else if (hasProperty("ci")) {
+	isCiBuild = true
+        isSign = true
+	version += "-SNAPSHOT"
+	sonatypeRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+} else {
+	isDevBuild = true
+	version += "-SNAPSHOT"
+}
+
+if(isSign) {
+        signing {
+                sign configurations.archives
+        }
+} else {
+        task signArchives {
+                //NOOP
+        }
+}
+
+jacocoTestReport {
+        reports {
+                xml.enabled = true
+                html.enabled = true
+        }
+}
+
+uploadArchives {
+        repositories {
+                if(isDevBuild) {
+                        mavenLocal()
+                } else {
+                        mavenDeployer {
+                                if(isSign) {
+                                        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                                }
+
+                                repository(url: sonatypeRepoUrl) {
+                                        authentication(userName: sonatypeUsername, password: sonatypePassword)
+                                }
+
+                                pom.project {
+                                        name 'KeyStore-DynamoDB'
+                                        packaging 'jar'
+                                        description 'DynamoDB implementation of the KeyStore API'
+                                        url 'http://github.com/wolfninja/KeyStore-DynamoDB'
+
+                                        scm {
+                                                url 'scm:git@github.com:wolfninja/KeyStore-DynamoDB.git'
+                                                connection 'scm:git@github.com:wolfninja/KeyStore-DynamoDB.git'
+                                                developerConnection 'scm:git@github.com:wolfninja/KeyStore-DynamoDB.git'
+                                        }
+
+                                        licenses {
+                                                license {
+                                                        name 'MIT License'
+                                                        url 'http://opensource.org/licenses/MIT'
+                                                        distribution 'repo'
+                                                }
+                                        }
+
+                                        developers {
+                                                developer {
+                                                        id 'nickball'
+                                                        name 'Nick Ball'
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
+}
