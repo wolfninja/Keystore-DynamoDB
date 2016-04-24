@@ -13,6 +13,7 @@ import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
@@ -169,12 +170,22 @@ public class DynamoDbKeyspace implements Keyspace {
 		Objects.requireNonNull(key, "Key must not be null");
 		Objects.requireNonNull(value, "Value must not be null");
 
-		final Item item = buildItem(key, value);
-		final Map<String, String> nameMap = new HashMap<>();
-		nameMap.put("#b", attributeNameKeyspace);
+		final UpdateItemSpec spec = new UpdateItemSpec() //
+				.withReturnValues(ReturnValue.ALL_OLD) //
+				.withPrimaryKey(attributeNameKeyspace, keyspaceName, attributeNameKey, key) //
+				.withAttributeUpdate( //
+						new AttributeUpdate(attributeNameValue).put(value), //
+						new AttributeUpdate(attributeNameVersion).put(value.hashCode()) //
+				) //
+				.withExpected(new Expected(attributeNameKey).exists());
+
 		try {
-			table.putItem(item, "attribute_exists(#b)", nameMap, null);
-			return true;
+			final UpdateItemOutcome outcome = table.updateItem(spec);
+			final Item item = outcome.getItem();
+			if (item == null) {
+				return true;
+			}
+			return !Objects.equals(item.get(attributeNameValue), value);
 		} catch (ConditionalCheckFailedException ex) {
 			return false;
 		}

@@ -81,6 +81,24 @@ public class DynamoDbKeyspaceTest {
 		};
 	}
 
+	public static <E extends Comparable<E>> Comparator<E> defaultComparator(final Class<E> clazz) {
+		return new Comparator<E>() {
+
+			@Override
+			public int compare(E o1, E o2) {
+				if (o1 == o2)
+					return 0;
+				if (o1 == null)
+					return -1;
+				if (o2 == null)
+					return 1;
+				if (o1.equals(o2))
+					return 0;
+				return o1.compareTo(o2);
+			}
+		};
+	}
+
 	public static Comparator<DeleteItemSpec> deleteItemSpecComparator() {
 		return new Comparator<DeleteItemSpec>() {
 
@@ -176,6 +194,15 @@ public class DynamoDbKeyspaceTest {
 
 			@Override
 			public int compare(Object o1, Object o2) {
+				if (o1 == o2)
+					return 0;
+				if (o1 == null)
+					return -1;
+				if (o2 == null)
+					return 1;
+				if (o1.equals(o2))
+					return 0;
+
 				return Integer.compare(o1.hashCode(), o2.hashCode());
 			}
 		};
@@ -191,6 +218,10 @@ public class DynamoDbKeyspaceTest {
 					return i;
 
 				i = keyAttributeCollectionComparator().compare(o1.getKeyComponents(), o2.getKeyComponents());
+				if (i != 0)
+					return i;
+
+				i = defaultComparator(String.class).compare(o1.getReturnValues(), o2.getReturnValues());
 				if (i != 0)
 					return i;
 
@@ -555,25 +586,39 @@ public class DynamoDbKeyspaceTest {
 
 	@Test
 	public void replaceTest() {
-		final Item inputItem = new Item() //
-				.withPrimaryKey("ut_attr_keyspace", "ut_keyspace", "ut_attr_key", "replace_first") //
-				.withString("ut_attr_val", "jeff") //
-				.withLong("ut_attr_version", "jeff".hashCode());
-		final Map<String, String> inputNameMap = new HashMap<>();
-		inputNameMap.put("#b", "ut_attr_keyspace");
+		final long newVersion = "jeff".hashCode();
 
-		EasyMock.expect(mockTable.putItem(inputItem, "attribute_exists(#b)", inputNameMap, null)) //
-				.andReturn(EasyMock.createMock(PutItemOutcome.class)) //
+		final UpdateItemSpec inputSpec = new UpdateItemSpec() //
+				.withReturnValues(ReturnValue.ALL_OLD) //
+				.withPrimaryKey("ut_attr_keyspace", "ut_keyspace", "ut_attr_key", "replace_first") //
+				.withAttributeUpdate( //
+						new AttributeUpdate("ut_attr_val").put("jeff"), //
+						new AttributeUpdate("ut_attr_version").put(newVersion) //
+				) //
+				.withExpected(new Expected("ut_attr_key").exists());
+
+		final UpdateItemOutcome mockOutcome = EasyMock.createMock(UpdateItemOutcome.class);
+		final Item mockItem = EasyMock.createMock(Item.class);
+		EasyMock.expect(mockOutcome.getItem()).andReturn(mockItem).times(2);
+		EasyMock.expect(mockItem.get("ut_attr_val")) //
+				.andReturn("dean") //
+				.andReturn("jeff");
+
+		EasyMock.expect(
+				mockTable.updateItem(EasyMock.cmp(inputSpec, updateItemSpecComparator(), LogicalOperator.EQUAL))) //
+				.andReturn(mockOutcome).times(2) //
 				.andThrow(new ConditionalCheckFailedException("Doesn't exist"));
 
-		EasyMock.replay(mockTable);
+		EasyMock.replay(mockTable, mockOutcome, mockItem);
 
 		final boolean actual = keyspace.replace("replace_first", "jeff");
 		final boolean actual2 = keyspace.replace("replace_first", "jeff");
+		final boolean actual3 = keyspace.replace("replace_first", "jeff");
 
-		EasyMock.verify(mockTable);
+		EasyMock.verify(mockTable, mockOutcome, mockItem);
 		Assert.assertTrue(actual);
 		Assert.assertFalse(actual2);
+		Assert.assertFalse(actual3);
 	}
 
 	@DataProvider
