@@ -1,0 +1,16 @@
+.hg/
+.gradle/
+.classpath
+.project
+.orig
+*.swp
+.settings/
+aws.test.properties
+/gradle.properties
+/*.pubring.gpg
+/*.secring.gpg
+Main.java
+bin/
+build/
+target/
+test-output/
