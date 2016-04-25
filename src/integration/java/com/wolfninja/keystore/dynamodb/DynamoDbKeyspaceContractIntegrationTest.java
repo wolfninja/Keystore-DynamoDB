@@ -18,18 +18,14 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.wolfninja.keystore.api.BaseKeyspaceTest;
 
+/**
+ * Integration test that verifies we are conforming to the Keyspace API using a
+ * temporary table in AWS
+ * 
+ * @since 0.1.0
+ */
 @Test
-public class DynamoDbKeyspaceIntegrationTest extends BaseKeyspaceTest {
-
-	private final DynamoDbKeyspace keyspace;
-	private Table table;
-
-	@Factory(dataProvider = "dp")
-	public DynamoDbKeyspaceIntegrationTest(final DynamoDbKeyspace keyspace, final Table table) {
-		super(keyspace);
-		this.keyspace = keyspace;
-		this.table = table;
-	}
+public class DynamoDbKeyspaceContractIntegrationTest extends BaseKeyspaceTest {
 
 	@DataProvider
 	static Object[][] dp() throws FileNotFoundException, IllegalArgumentException, IOException {
@@ -41,21 +37,35 @@ public class DynamoDbKeyspaceIntegrationTest extends BaseKeyspaceTest {
 		return new Object[][] { { ddk, table } };
 	}
 
-	@AfterClass
-	public void tearDown() {
-		if (table != null) {
-			table.delete();
-		}
-	}
-
 	public static DynamoDB dynamoDB() throws FileNotFoundException, IllegalArgumentException, IOException {
 		final AWSCredentials awsCredentials = new PropertiesCredentials(
 				Thread.currentThread().getContextClassLoader().getResourceAsStream("aws.test.properties"));
 
 		final AmazonDynamoDBClient client = new AmazonDynamoDBClient(awsCredentials);
+		// XXX Consider moving region to property file
 		client.setRegion(Region.getRegion(Regions.US_WEST_1));
 
 		final DynamoDB dynamoDB = new DynamoDB(client);
 		return dynamoDB;
+	}
+
+	@SuppressWarnings("unused")
+	private final DynamoDbKeyspace keyspace;
+
+	private Table table;
+
+	@Factory(dataProvider = "dp")
+	public DynamoDbKeyspaceContractIntegrationTest(final DynamoDbKeyspace keyspace, final Table table) {
+		super(keyspace);
+		this.keyspace = keyspace;
+		this.table = table;
+	}
+
+	@AfterClass
+	public void tearDown() {
+		if (table != null) {
+			System.out.println("Deleting table: " + table.getTableName());
+			table.delete();
+		}
 	}
 }

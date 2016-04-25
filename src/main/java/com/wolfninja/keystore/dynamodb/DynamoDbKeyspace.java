@@ -22,9 +22,14 @@ import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.wolfninja.keystore.api.KeyValue;
 import com.wolfninja.keystore.api.Keyspace;
 
+/**
+ * DynamoDB implementation of {@link Keyspace}
+ * 
+ * @since 0.1
+ */
 public class DynamoDbKeyspace implements Keyspace {
 
-	private static final boolean CONSISTENT_READ = false;
+	public static final boolean STRONGLY_CONSISTENT_READ = true;
 	private final String keyspaceName;
 	private final Table table;
 	private final String attributeNameKeyspace;
@@ -32,6 +37,17 @@ public class DynamoDbKeyspace implements Keyspace {
 	private final String attributeNameValue;
 	private final String attributeNameVersion;
 
+	/**
+	 * Create new Keyspace instance
+	 * 
+	 * @param keyspaceName
+	 * @param table
+	 * @param attributeNameKeyspace
+	 * @param attributeNameKey
+	 * @param attributeNameValue
+	 * @param attributeNameVersion
+	 * @since 0.1
+	 */
 	protected DynamoDbKeyspace(@Nonnull final String keyspaceName, @Nonnull final Table table,
 			@Nonnull final String attributeNameKeyspace, @Nonnull final String attributeNameKey,
 			@Nonnull final String attributeNameValue, @Nonnull final String attributeNameVersion) {
@@ -66,6 +82,16 @@ public class DynamoDbKeyspace implements Keyspace {
 		}
 	}
 
+	/**
+	 * Build new {@link Item} with correct attributes
+	 * 
+	 * @param key
+	 *            String key Key to assign
+	 * @param value
+	 *            String value Value to assign
+	 * @return new {@link Item} instance
+	 * @since 0.1
+	 */
 	private Item buildItem(final String key, final String value) {
 		return new Item() //
 				.withPrimaryKey(buildPrimaryKey(key)) //
@@ -73,6 +99,14 @@ public class DynamoDbKeyspace implements Keyspace {
 				.withLong(attributeNameVersion, value.hashCode());
 	}
 
+	/**
+	 * Build {@link PrimaryKey} instance for the given key
+	 * 
+	 * @param key
+	 *            String key
+	 * @return {@link PrimaryKey}
+	 * @since 0.1
+	 */
 	private PrimaryKey buildPrimaryKey(final String key) {
 		Objects.requireNonNull(key, "Key must not be null");
 		return new PrimaryKey(attributeNameKeyspace, keyspaceName, attributeNameKey, key);
@@ -131,7 +165,7 @@ public class DynamoDbKeyspace implements Keyspace {
 		final GetItemSpec spec = new GetItemSpec() //
 				.withPrimaryKey(buildPrimaryKey(key)) //
 				.withAttributesToGet(attributeNameKey) //
-				.withConsistentRead(CONSISTENT_READ); //
+				.withConsistentRead(STRONGLY_CONSISTENT_READ); //
 		return table.getItem(spec) != null;
 	}
 
@@ -140,7 +174,7 @@ public class DynamoDbKeyspace implements Keyspace {
 		Objects.requireNonNull(key, "Key must not be null");
 		final GetItemSpec spec = new GetItemSpec() //
 				.withPrimaryKey(buildPrimaryKey(key)) //
-				.withConsistentRead(CONSISTENT_READ); //
+				.withConsistentRead(STRONGLY_CONSISTENT_READ); //
 
 		final Item item = table.getItem(spec);
 		if (item == null) {
@@ -154,7 +188,7 @@ public class DynamoDbKeyspace implements Keyspace {
 		Objects.requireNonNull(key, "Key must not be null");
 		final GetItemSpec spec = new GetItemSpec() //
 				.withPrimaryKey(buildPrimaryKey(key)) //
-				.withConsistentRead(CONSISTENT_READ); //
+				.withConsistentRead(STRONGLY_CONSISTENT_READ); //
 
 		final Item item = table.getItem(spec);
 		if (item == null) {

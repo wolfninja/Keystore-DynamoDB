@@ -149,7 +149,7 @@ public class DynamoDbKeyspaceTest {
 		};
 	}
 
-	public static Comparator<Collection<KeyAttribute>> keyAttributeCollectionComparator() {
+	private static Comparator<Collection<KeyAttribute>> keyAttributeCollectionComparator() {
 		return new Comparator<Collection<KeyAttribute>>() {
 
 			@Override
@@ -170,12 +170,7 @@ public class DynamoDbKeyspaceTest {
 		};
 	}
 
-	public static Comparator<Collection<KeyAttribute>> keyAttributeCollectionComparator(
-			final Comparator<KeyAttribute> comparator) {
-		return collectionComparator(keyAttributeComparator());
-	}
-
-	public static Comparator<KeyAttribute> keyAttributeComparator() {
+	private static Comparator<KeyAttribute> keyAttributeComparator() {
 		return new Comparator<KeyAttribute>() {
 
 			@Override
@@ -189,7 +184,7 @@ public class DynamoDbKeyspaceTest {
 		};
 	}
 
-	public static Comparator<Object> objectComparator() {
+	private static Comparator<Object> objectComparator() {
 		return new Comparator<Object>() {
 
 			@Override
