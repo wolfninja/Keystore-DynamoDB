@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [ "$TRAVIS_REPO_SLUG" == "wolfninja/KeyStore-DynamoDB" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ] || [ "$TRAVIS_BRANCH" == "develop" ]; then
-  if [[ $(./gradlew -q getVersion) != *SNAPSHOT* ]]; then
-      echo 'Snapshots only!'
-      return 0
+if [ "$TRAVIS_REPO_SLUG" == "wolfninja/KeyStore-DynamoDB" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+  if [[ $(./gradlew -q getVersion) == *SNAPSHOT* ]]; then
+      echo 'No snapshots!'
+      exit 0
   fi
 
   echo -e "Starting publish...\n"
@@ -15,7 +15,7 @@ if [ "$TRAVIS_REPO_SLUG" == "wolfninja/KeyStore-DynamoDB" ] && [ "$TRAVIS_PULL_R
     echo 'Completed publish!'
   else
     echo 'Publish failed.'
-    return 1
+    exit 1
   fi
 
 fi

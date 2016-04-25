@@ -13,7 +13,7 @@ DynamoDB client implementation of the [WolfNinja KeyStore abstraction API](http:
 DynamoDB implementation of the KeyStore API. This implementation uses the [Amazon AWS SDK Java](https://github.com/aws/aws-sdk-java) library.
 
 ## Latest version
-The most recent release is KeyStore-dynamodb 0.1.0, released #FIXME#. Targets [KeyStore API 0.1.0](https://github.com/wolfninja/KeyStore/tree/v0.1.0)
+The most recent release is KeyStore-dynamodb 0.1.0, released 2016-04-25. Targets [KeyStore API 0.1.0](https://github.com/wolfninja/KeyStore/tree/v0.1.0)
 
 ### Maven Central
 Releases are available via Maven Central: [com.wolfninja.keystore:keystore-dynamodb:0.1.0](http://search.maven.org/#artifactdetails|com.wolfninja.keystore|keystore-dynamodb|0.1.0|bundle)
