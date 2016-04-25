@@ -1,0 +1,20 @@
+language: java
+jdk:
+- oraclejdk8
+before_install:
+- pip install --user codecov
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 gradle.properties.gpg
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 wolfninja_keystore.pubring.gpg.gpg
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 wolfninja_keystore.secring.gpg.gpg
+- echo $ENCRYPTION_PASSWORD | gpg --batch --passphrase-fd 0 src/integration/resources/aws.test.properties.gpg
+script: gradle check javadoc
+after_success:
+- codecov
+- ".scripts/publish.sh"
+cache:
+  directories:
+  - "$HOME/.gradle"
+  - "$HOME/.m2"
+env:
+  global:
+    secure: QSx1hprMtAk5qTlTq9Y8XJQbYA9TtpjuM3gOLNOZY4GJ9zbfs95ld3rTP0wTXaWOc3BbvdrpgRB44BicEjlx/SyH+fEsHYqBIQvUHB8SIPapyzAge3hfHfZE4OBMIH+E2p79zyewUPfETh7OmaVREEhmaWMNeywcdJD6/7hR2uTMf4xKW8n8R/VA4KvR1dizYLr7BN4fzSGKhTOOpxLxtr2Df5MXSSzE42LfByL6rZ2skL+GVcK21hAiv4uP6SbUaU8cs2joD196Kx3yv6iFn1CrgnO7xu8OUT9WbIWuEVPagMb51OMmUB/E/WJ2Ef+VzPCFNw+4ycsJlwafEySJnTfwzYVyo0MnTHI1aCTan7+gTWrxeZd/JWfz+ShIWLFVGqwmJO8cP1xqdDsjITirowrv9EOLGOlisEEGqQgTE4fPpuodjYGEY0pYsWXqfZA2anSAMsuImJCpkQcPCXr6Pd975qPDmY23ZmJfw6aWEfqeQ8cuntXzybU8dmUlmhj0rena9FL/MLy7BXBF4yzpAeHaxKwFjekmNgBzSnzyP4klxQK+SAZ0IbUhnX4shsNO0KCLuc6seh3lRdQBH5cBjetCIwcHGj9I9Fh7DlLUzbZQMdm0WBnkgYd/FSspP22Ycwp/ATLMVtItSgkUN4oRfKWMkiwlvgMDCTbmKExq80M=

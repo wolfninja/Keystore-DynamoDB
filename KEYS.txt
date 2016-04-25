@@ -1,0 +1,48 @@
+This file contains the PGP keys of various developers.
+
+Users: pgp < KEYS
+       gpg --import KEYS
+Developers: 
+    pgp -kxa <your name> and append it to this file.
+    (pgpk -ll <your name> && pgpk -xa <your name>) >> this file.
+    (gpg --list-sigs <your name>
+    	&& gpg --armor --export <your name>) >> this file.
+
+
+pub   2048R/F309B98A 2015-12-15 [expires: 2020-12-13]
+uid                  Wolfninja Keystore (Release Signing) <security@wolfninja.com>
+sig 3        F309B98A 2015-12-15  Wolfninja Keystore (Release Signing) <security@wolfninja.com>
+sub   2048R/87A4671E 2015-12-15 [expires: 2020-12-13]
+sig          F309B98A 2015-12-15  Wolfninja Keystore (Release Signing) <security@wolfninja.com>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1
+
+mQENBFZvtxsBCAC7ElRvGCpgI/E7l/C/brUBGknozuXe3cPrDbvsETDypIca9uwk
+m5JMX5PJhP6FyMctoTNV5vab6ayfJdIQ0eQ3pZsy4iGpjA/SfIj2zgGrLgQ9ttvh
+YUzeVK4krCQbf2HXtEDF2SFUu2t6UQnNd26A89bT49yZI5AJJUevVD9Xtsa2cqyW
+WFASxJksVrYYNDjvLSJ7qgb1wBlPhZdTKQ6bwHmMVsL+HBYU9a+61kuw+tGXgOMV
+x76WNW6ViWCLUFpUrbcY/bVbvaDRcY3o66TJNg+asJjQo4bTVeq/m+fZEy1PBC+b
+3fdhcaxQkwoo4MQ/fZh8JkvklxJ7AzTYQs6lABEBAAG0PVdvbGZuaW5qYSBLZXlz
+dG9yZSAoUmVsZWFzZSBTaWduaW5nKSA8c2VjdXJpdHlAd29sZm5pbmphLmNvbT6J
+AT4EEwECACgFAlZvtxsCGwMFCQlmAYAGCwkIBwMCBhUIAgkKCwQWAgMBAh4BAheA
+AAoJEL1OxN/zCbmKuisIAJ1I8xqC0qp4LquGhZ4hUNMvpmgKjuCnQzwfWK/a0SVG
+OIzl6MEgKqXhXpoyEQxcjGBU2kK8MvTa4FYjsmpRer+hJhJ75cy0AP7eFTBpMMcP
+CI0IeAi/4zNkFm7fvpT1TwaA4UIrv7w0pJvedZB48kcNriXVXo20Phjo6hRH2NJD
+xesZe+SX08d6n8DVoM0WtAt+jReO3E9Eg9obVHQFxQpJ2f3YZhaDdjk9hnA15meB
+Z+An63WsJM7KRVbSTB2NftvGVpK7TU06XhxfBbK5IigUb5b3vGySx/9D8GLaTNh9
+6xOaBQByVuj8WGaYba7gbgnCTdRGlJic0YXEMO7LPoS5AQ0EVm+3GwEIAM0KwqUu
+UlULNAmQw1tFC7Op2ujOP4GTYE2BdG33Fl9n5AVOBKEhiL8/CTS55bo22dwWLrxC
+3GxvbeSH3h1T+n+sQTKfxvk8ByTeEMtH+uqLz4xTxV783Acx56exMmheyhettgDK
+4I710HVCnXKXqzR46wM3xnB4A/ny6QyETYb+eVtimEIa5d+uvAn28yhrC4klxX8S
+lIf5pUSQ3kpl7vivikSem5sVFyIcEO2CTYcB6EbwXBPJlDiESAdAOk61UGzyfMJP
+erZvrCEo1wrT5lYq4xZR6yaSfObEi7RZvgCkEfb8K4IoKOijrjAIb9EOrUuXqDiP
+7RLLP7DnZMdzYjMAEQEAAYkBJQQYAQIADwUCVm+3GwIbDAUJCWYBgAAKCRC9TsTf
+8wm5it55CACUhBgl0fSI3r7OOOP+AxUSNPD9laKtuJSEE0cuNi8r4sYtw6tMsMRq
+sMs1udJMMDVnaPk985NR3+bg50zdYfZrLCnlOoshoArjeoKjl4Udl/83mu3SxrbC
+KhMoW77SbZuWWxwbgkkB72EtN7P3OXFQjclQDAUqy4M5QDL4zPvGMxdrcRjkqdHp
+nJ4RGAjL8cvDJHWHPqNKl5TlOdzhN5/8jJwGi2aiPfQb47pnC/zLNNilutiGFTSv
+qDSkxrul4JgKot7FSld9xQb3pZGWZel2OsQ+1Yi5Xub+GRAGYmpn1Ggt+HfYw4cS
+VFBUuN6va3NRvxcpqctkSc7XUQcPMqyZ
+=oSR2
+-----END PGP PUBLIC KEY BLOCK-----
